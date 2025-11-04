@@ -1,9 +1,9 @@
 package resources;
 
 public class Main {
-
+	// this was jam HI JAMASHED
 	public static void main(String[] args) {
-		Solitaire game = new Solitaire();
+		Poker game = new Poker();
 		GUI gui = new GUI(game);
 	}
 }
