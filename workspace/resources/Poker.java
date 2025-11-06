@@ -14,15 +14,16 @@ import resources.Card.Suit;
 
 public class Poker {
 	Stack<Card> pile = new Stack<Card>();
+	ArrayList<Card> pulledCards = new ArrayList<Card>();
 	//ArrayList<Stack <Card>> columns;
 	//Queue<Card> deck;
 	
 	//the part of your program that's in charge of game rules goes here.
 
 	public int pot = 0;
-	public int playerTurn = 0;
-
-
+	public String currentTurn = player1;
+	public int raise = 0;	
+	
 	private int player1Cash = 0;
 	private int player2Cash = 0;
 
@@ -31,6 +32,7 @@ public class Poker {
 	public void beginGame() {
 		pot = 0;
 		playerTurn = 1;
+		raise = 0;
 		player1Cash = 500;
 		player2Cash = 500;
 
@@ -43,6 +45,11 @@ public class Poker {
 
 		Collections.shuffle(pile);
 		System.out.println(pile);
+
+		//first 4 pulled cards are 2 for each player
+		for(int i=0; i<4; i++) {
+			nextCard();
+		}
 	}
 	
 
@@ -54,28 +61,36 @@ public class Poker {
 		return player2Cash;
 	}
 
-	public void revealNext()
+	public Card nextCard()
 	{
-		// Reveals next community card, no need to code logic for first three, that will be later
-	}
+		pulledCards.add(pile.peek());
+		return pile.pop();
+	} 
 
-	public  void raise(int amount) {
+	public  void raisePot(int amount) {
+		raise = amount;
 		pot += amount;
+		
+		if(currentTurn.matches("player1")) {
+			player1Cash -= amount;
+		} else {
+			player2Cash -= amount;
+		}
 	}
 
 	public void fold() {
-
+		
 	}
 
-	public void callCheck() {
+	public void call() {
 		
 	}
 
 	public void endTurn() {
-		if(playerTurn == 1) {
-			playerTurn = 2;
+		if(currentTurn.matches("player1")) {
+			currentTurn = player2;
 		} else {
-			playerTurn = 1;
+			currentTurn = player1;
 		}
 	}
 }
