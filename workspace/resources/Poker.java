@@ -28,12 +28,20 @@ public class Poker {
 	public Player player1 = new Player(100); 
 	public Player player2 = new Player(100);
 
-	
+	enum gameStates {
+		running,
+		finishing,
+		waiting,
+		done
+	}
+	public gameStates stage;
+
 	public void beginGame() {
 		pot = 0;
 		currentPlayer = player1;
 		raise = 0;
 
+		stage = gameStates.running;
 
 		pile.clear();
 		for(int i = 1; i<=13; i++) { pile.push(new Card(i, Suit.Spades)); }
@@ -50,8 +58,8 @@ public class Poker {
 			nextCard();
 		}
 		player1.setPocket(pulledCards);
-
 		pulledCards.clear();
+
 		for(int i=0; i<2; i++) {
 			nextCard();
 		}
@@ -75,12 +83,13 @@ public class Poker {
 	}
 
 	public void check() {
-		raise = 0;
 		endTurn();
 	}
 
 	public void fold() {
-		
+		raise = 0;
+		stage = gameStates.finishing;
+		endTurn();
 	}
 
 	public void call() {
@@ -93,20 +102,24 @@ public class Poker {
 			currentPlayer.setCash( currentPlayer.getCash() - raise);
 		}
 		raise = 0;
+		endTurn();
 	}
 
 
 	public void endTurn() {
 		switchTurn();
 		if(raise > 0) {
-			return();
+			return;
 		}
 
 		nextCard();
+		if(pulledCards.size() == 5) {
+			stage = gameStates.done;
+		}
 	}
 
 	public void switchTurn() {
-		if(currentPlayer == player1)) {
+		if(currentPlayer == player1) {
 			currentPlayer = player2;
 		} else {
 			currentPlayer = player1;
