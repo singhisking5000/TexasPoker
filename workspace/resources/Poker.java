@@ -6,6 +6,8 @@ import java.util.Stack;
 
 import resources.Card.Suit;
 
+// 
+
 /*
  * 52 cards, 13 of each suit
  * 4 of each number and face, 13 different numbers (11 for jack, 12 for queen, 13 for king)
@@ -20,21 +22,17 @@ public class Poker {
 	
 	//the part of your program that's in charge of game rules goes here.
 
-	public int pot = 0;
-	public String currentTurn = player1;
-	public int raise = 0;	
-	
-	private int player1Cash = 0;
-	private int player2Cash = 0;
+	public int pot;
+	public Player currentPlayer;
+	public int raise;	
+	public Player player1 = new Player(100); 
+	public Player player2 = new Player(100);
 
 	
-
 	public void beginGame() {
 		pot = 0;
-		playerTurn = 1;
+		currentPlayer = player1;
 		raise = 0;
-		player1Cash = 500;
-		player2Cash = 500;
 
 
 		pile.clear();
@@ -46,20 +44,22 @@ public class Poker {
 		Collections.shuffle(pile);
 		System.out.println(pile);
 
-		//first 4 pulled cards are 2 for each player
-		for(int i=0; i<4; i++) {
+
+		//sets the players pockets
+		for(int i=0; i<2; i++) {
 			nextCard();
 		}
+		player1.setPocket(pulledCards);
+
+		pulledCards.clear();
+		for(int i=0; i<2; i++) {
+			nextCard();
+		}
+		player2.setPocket(pulledCards);
+
+		pulledCards.clear();
 	}
 	
-
-	public int getPlayer1Cash() {
-		return player1Cash;
-	}
-
-	public int getPlayer2Cash() {
-		return player2Cash;
-	}
 
 	public Card nextCard()
 	{
@@ -71,11 +71,12 @@ public class Poker {
 		raise = amount;
 		pot += amount;
 		
-		if(currentTurn.matches("player1")) {
-			player1Cash -= amount;
-		} else {
-			player2Cash -= amount;
-		}
+		currentPlayer.setCash(currentPlayer.getCash() - amount);
+	}
+
+	public void check() {
+		raise = 0;
+		endTurn();
 	}
 
 	public void fold() {
@@ -83,14 +84,32 @@ public class Poker {
 	}
 
 	public void call() {
-		
+		//If the raise is MORE than what you have then you will just give whatever you have left
+		if(currentPlayer.getCash() < raise) {
+			pot += currentPlayer.getCash();
+			currentPlayer.setCash(0);
+		} else {
+			pot += raise;
+			currentPlayer.setCash( currentPlayer.getCash() - raise);
+		}
+		raise = 0;
 	}
 
+
 	public void endTurn() {
-		if(currentTurn.matches("player1")) {
-			currentTurn = player2;
+		switchTurn();
+		if(raise > 0) {
+			return();
+		}
+
+		nextCard();
+	}
+
+	public void switchTurn() {
+		if(currentPlayer == player1)) {
+			currentPlayer = player2;
 		} else {
-			currentTurn = player1;
+			currentPlayer = player1;
 		}
 	}
 }
