@@ -29,10 +29,9 @@ public class Poker {
 	public Player player2 = new Player(100);
 
 	enum gameStates {
-		running,
-		finishing,
-		waiting,
-		done
+		BETTING,
+		DRAWING,
+		END
 	}
 	public gameStates stage;
 
@@ -41,7 +40,7 @@ public class Poker {
 		currentPlayer = player1;
 		raise = 0;
 
-		stage = gameStates.running;
+		stage = gameStates.BETTING;
 
 		pile.clear();
 		for(int i = 1; i<=13; i++) { pile.push(new Card(i, Suit.Spades)); }
@@ -55,13 +54,13 @@ public class Poker {
 
 		//sets the players pockets
 		for(int i=0; i<2; i++) {
-			nextCard();
+			drawCard();
 		}
 		player1.setPocket(pulledCards);
 		pulledCards.clear();
 
 		for(int i=0; i<2; i++) {
-			nextCard();
+			drawCard();
 		}
 		player2.setPocket(pulledCards);
 
@@ -69,7 +68,7 @@ public class Poker {
 	}
 	
 
-	public Card nextCard()
+	public Card drawCard()
 	{
 		pulledCards.add(pile.peek());
 		return pile.pop();
@@ -88,7 +87,7 @@ public class Poker {
 
 	public void fold() {
 		raise = 0;
-		stage = gameStates.finishing;
+		stage = gameStates.DRAWING;
 		endTurn();
 	}
 
@@ -112,9 +111,9 @@ public class Poker {
 			return;
 		}
 
-		nextCard();
+		drawCard();
 		if(pulledCards.size() == 5) {
-			stage = gameStates.done;
+			stage = gameStates.END;
 		}
 	}
 
@@ -124,5 +123,9 @@ public class Poker {
 		} else {
 			currentPlayer = player1;
 		}
+	}
+
+	public Stack getPile() {
+		return pile;
 	}
 }

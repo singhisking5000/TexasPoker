@@ -11,13 +11,24 @@ import java.awt.event.MouseMotionListener;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Stack;
 
 
-public class GUI extends JFrame implements ActionListener, MouseListener{
+public class GUI extends JFrame implements ActionListener {
 
 	Poker game;
+
+	Stack<Card> deck = new Stack<Card>();
+
+	enum action
+	{
+		ADD,
+		REMOVE
+	}
+
 	public GUI(Poker game){
 		this.game = game;
+		//deck = game.getPile();
 		setTitle("Texas Holdem");
 		int frameWidth = 1080;
 		int frameHeight = 840;
@@ -48,31 +59,39 @@ public class GUI extends JFrame implements ActionListener, MouseListener{
         //buttonsAndDeck.setBorder(BorderFactory.createLineBorder(Color.RED, 3));
         buttonsAndDeck.setLayout(new GridBagLayout());
         
+		int buttonSize = 6;
         // INSIDE BUTTONSANDDECK
         JPanel buttons = new JPanel();
         buttons.setBackground(Color.BLUE);
-        buttons.setSize(new Dimension(frameWidth/3, frameHeight/4));
-        buttons.setPreferredSize(new Dimension(frameWidth/3, frameHeight/4));
-        buttons.setMinimumSize(new Dimension(frameWidth/3, frameHeight/4));
+        buttons.setSize(new Dimension(frameWidth/3, frameHeight/buttonSize));
+        buttons.setPreferredSize(new Dimension(frameWidth/3, frameHeight/buttonSize));
+        buttons.setMinimumSize(new Dimension(frameWidth/3, frameHeight/buttonSize));
 		buttons.setLayout(new GridBagLayout());
 
 		//		BUTTONS 	 \\
 			JButton callCheck = new JButton("Call / Check");
-			callCheck.setSize(new Dimension(frameWidth/9, frameHeight/4));
-			callCheck.setPreferredSize(new Dimension(frameWidth/9, frameHeight/4));
+			callCheck.setSize(new Dimension(frameWidth/9, frameHeight/buttonSize));
+			callCheck.setPreferredSize(new Dimension(frameWidth/9, frameHeight/buttonSize));
 			JButton raise = new JButton("Raise");
-			raise.setSize(new Dimension(frameWidth/9, frameHeight/4));
-			raise.setPreferredSize(new Dimension(frameWidth/9, frameHeight/4));
+			raise.setSize(new Dimension(frameWidth/9, frameHeight/buttonSize));
+			raise.setPreferredSize(new Dimension(frameWidth/9, frameHeight/buttonSize));
 			JButton fold = new JButton("Fold");
-			raise.setSize(new Dimension(frameWidth/9, frameHeight/4));
-			raise.setPreferredSize(new Dimension(frameWidth/9, frameHeight/4));
+			fold.setSize(new Dimension(frameWidth/9, frameHeight/buttonSize));
+			fold.setPreferredSize(new Dimension(frameWidth/9, frameHeight/buttonSize));
 
         // buttons.setLayout();
         JPanel drawPile = new JPanel();
         drawPile.setBackground(Color.MAGENTA);
-        drawPile.setSize(new Dimension(frameWidth/6, frameHeight/4));
-        drawPile.setPreferredSize(new Dimension(frameWidth/6, frameHeight/4));
-        drawPile.setMinimumSize(new Dimension(frameWidth/6, frameHeight/4));
+        drawPile.setSize(new Dimension(frameWidth/6, frameHeight/3));
+        drawPile.setPreferredSize(new Dimension(frameWidth/6, frameHeight/3));
+        drawPile.setMinimumSize(new Dimension(frameWidth/6, frameHeight/3));
+		drawPile.setLayout(new GridBagLayout());
+		JLayeredPane drawingCards = new JLayeredPane();
+		drawingCards.setBackground(Color.GRAY);
+		drawingCards.setOpaque(true);
+        drawingCards.setSize(new Dimension(frameWidth/6, frameHeight/3));
+        drawingCards.setPreferredSize(new Dimension(frameWidth/6, frameHeight/3));
+        drawingCards.setMinimumSize(new Dimension(frameWidth/6, frameHeight/3));
 
         JPanel discard = new JPanel();
         discard.setBackground(Color.GREEN);
@@ -119,17 +138,21 @@ public class GUI extends JFrame implements ActionListener, MouseListener{
         changeConstraints(tempC, 1, 1, 1, 1);
         buttonsAndDeck.add(discard, tempC);
 
+		// Adding the layered pane
+		drawPile.add(drawingCards);
+		
+
 		// Adding the buttons!
 		GridBagConstraints buttonC = new GridBagConstraints();
 		buttonC.fill = GridBagConstraints.BOTH;
 		buttonC.fill = GridBagConstraints.PAGE_START;
 
 		changeConstraints(buttonC, 0, 0, 1, 1);
-		buttons.add(callCheck);
+		buttons.add(callCheck, buttonC);
 		changeConstraints(buttonC, 1, 0, 1, 1);
-		buttons.add(raise);
+		buttons.add(raise, buttonC);
 		changeConstraints(buttonC, 2, 0, 1, 1);
-		buttons.add(fold);
+		buttons.add(fold, buttonC);
 
 		this.add(gameArea);
 		this.setVisible(true);
@@ -156,26 +179,17 @@ public class GUI extends JFrame implements ActionListener, MouseListener{
 
 
     }
-	// private void update() {
-	// 			columns.removeAll();
-	// 			topColumns.removeAll();
-			
-	// 			ArrayList<Stack<Card>> allColumns = game.getColumns();
 
-	// 			for(Stack<Card> stack: allColumns) {
-	// 			topColumns.add(drawPile(stack, false)); 
-	// 			}
-
-	// 			columns.add(drawDeck(game.getDeck()));
-	// 			columns.add(drawPile(game.getPile(), true));
-	// 			columns.add(drawFinal(game.hearts, "hearts"));
-	// 			columns.add(drawFinal(game.spades, "spades"));
-	// 			columns.add(drawFinal(game.diamonds, "diamonds"));
-	// 			columns.add(drawFinal(game.clubs, "clubs"));
-	// 			System.out.println("updating");
-	// 				this.revalidate();
-	// 				this.repaint();
-	// 		}
+	private void update(JPanel panel, action type, Card element)
+	{
+		if (type == action.ADD)
+		{
+			panel.add(element);
+		} else if (type == action.REMOVE)
+		{
+			panel.remove(element);
+		}
+	}
 	private void changeConstraints(GridBagConstraints c, int x, int y, int width, int height)
 	{
 		c.gridx = x;
@@ -184,39 +198,13 @@ public class GUI extends JFrame implements ActionListener, MouseListener{
 		c.gridheight = height;
 	}
 
-	@Override
-	public void mouseClicked(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
 
 	@Override
-	public void mouseEntered(MouseEvent arg0) {
+	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mouseExited(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mousePressed(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mouseReleased(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void actionPerformed(ActionEvent arg0) {
-		// TODO Auto-generated method stub
-		
+		if (e.getSource() instanceof JButton)
+		{
+			System.out.println("A button was pressed");
+		}
 	}
 }
