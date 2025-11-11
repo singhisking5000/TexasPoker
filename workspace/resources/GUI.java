@@ -184,10 +184,13 @@ public class GUI extends JFrame implements ActionListener {
 				Card tempDrawn = game.drawCard();
 				community.add(tempDrawn);
 				if(game.raise > 0) {
+					System.out.println("Call was pressed");
 					game.call();
+					game.endTurn();
 					return;
 				}
 
+				System.out.println("Check was pressed");
 				game.endTurn();
 				
 				update(communityCards, action.ADD, tempDrawn);
@@ -224,6 +227,9 @@ public class GUI extends JFrame implements ActionListener {
 		{
 			panel.remove(element);
 		}
+		this.revalidate();
+		this.repaint();
+		
 	}
 
 	

@@ -78,6 +78,7 @@ public class Poker {
 	} 
 
 	public  void raisePot(int amount) {
+		call();
 		raise = amount;
 		pot += raise;
 		
@@ -102,13 +103,12 @@ public class Poker {
 			currentPlayer.setCash( currentPlayer.getCash() - raise);
 		}
 		raise = 0;
-		endTurn();
 	}
 
 
 	public void endTurn() {
 		switchTurn();
-		System.out.println(currentPlayer.toString() + " turn ---- POT: " + pot + " ---- RAISE: " + raise);
+		System.out.println(currentPlayer.toString() + " turn ---- POT: " + pot + " ---- RAISE: " + raise + " ---- CASH: " + currentPlayer.getCash());
 		if(raise > 0) {
 			return;
 		}
