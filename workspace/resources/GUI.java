@@ -17,6 +17,21 @@ import java.util.Stack;
 public class GUI extends JFrame implements ActionListener {
 
 	Poker game;
+	Stack<Card> community = new Stack<Card>();
+
+	// List of things
+	JPanel gameArea;
+	JPanel communityCards;
+	JPanel player1;
+	JPanel buttonsAndDeck;
+	JPanel buttons;
+	JButton callCheck;
+	JButton raise;
+	JButton fold;
+	JPanel drawPile;
+	JLayeredPane drawingCards;
+	JPanel discard;
+	JPanel player2;
 
 	Stack<Card> deck = new Stack<Card>();
 
@@ -36,15 +51,15 @@ public class GUI extends JFrame implements ActionListener {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLayout(new FlowLayout());
 
-		JPanel gameArea = new JPanel();
+		gameArea = new JPanel();
         gameArea.setLayout(new GridBagLayout());
 
-        JPanel communityCards = new JPanel();
+        communityCards = new JPanel();
         communityCards.setSize(new Dimension(frameWidth, frameHeight/2));
         communityCards.setPreferredSize(new Dimension(frameWidth, frameHeight/2));
         communityCards.setBackground(Color.yellow);
 
-        JPanel player1 = new JPanel();
+        player1 = new JPanel();
         player1.setSize(new Dimension(frameWidth/3, frameHeight/2));
         player1.setPreferredSize(new Dimension(frameWidth/3, frameHeight/2));
         player1.setBackground(Color.ORANGE);
@@ -53,7 +68,7 @@ public class GUI extends JFrame implements ActionListener {
 
         // -------------------------------------------------------------- \
         // SPECIAL CASE - CURRENTLY NOT FINISHED
-        JPanel buttonsAndDeck = new JPanel();
+        buttonsAndDeck = new JPanel();
         buttonsAndDeck.setSize(new Dimension(frameWidth/3, frameHeight/2));
         buttonsAndDeck.setPreferredSize(new Dimension(frameWidth/3, frameHeight/2));
         //buttonsAndDeck.setBorder(BorderFactory.createLineBorder(Color.RED, 3));
@@ -61,7 +76,7 @@ public class GUI extends JFrame implements ActionListener {
         
 		int buttonSize = 6;
         // INSIDE BUTTONSANDDECK
-        JPanel buttons = new JPanel();
+        buttons = new JPanel();
         buttons.setBackground(Color.BLUE);
         buttons.setSize(new Dimension(frameWidth/3, frameHeight/buttonSize));
         buttons.setPreferredSize(new Dimension(frameWidth/3, frameHeight/buttonSize));
@@ -69,31 +84,31 @@ public class GUI extends JFrame implements ActionListener {
 		buttons.setLayout(new GridBagLayout());
 
 		//		BUTTONS 	 \\
-			JButton callCheck = new JButton("Call / Check");
+			callCheck = new JButton("Call / Check");
 			callCheck.setSize(new Dimension(frameWidth/9, frameHeight/buttonSize));
 			callCheck.setPreferredSize(new Dimension(frameWidth/9, frameHeight/buttonSize));
-			JButton raise = new JButton("Raise");
+			raise = new JButton("Raise");
 			raise.setSize(new Dimension(frameWidth/9, frameHeight/buttonSize));
 			raise.setPreferredSize(new Dimension(frameWidth/9, frameHeight/buttonSize));
-			JButton fold = new JButton("Fold");
+			fold = new JButton("Fold");
 			fold.setSize(new Dimension(frameWidth/9, frameHeight/buttonSize));
 			fold.setPreferredSize(new Dimension(frameWidth/9, frameHeight/buttonSize));
 
         // buttons.setLayout();
-        JPanel drawPile = new JPanel();
+        drawPile = new JPanel();
         drawPile.setBackground(Color.MAGENTA);
         drawPile.setSize(new Dimension(frameWidth/6, frameHeight/3));
         drawPile.setPreferredSize(new Dimension(frameWidth/6, frameHeight/3));
         drawPile.setMinimumSize(new Dimension(frameWidth/6, frameHeight/3));
 		drawPile.setLayout(new GridBagLayout());
-		JLayeredPane drawingCards = new JLayeredPane();
+		drawingCards = new JLayeredPane();
 		drawingCards.setBackground(Color.GRAY);
 		drawingCards.setOpaque(true);
         drawingCards.setSize(new Dimension(frameWidth/6, frameHeight/3));
         drawingCards.setPreferredSize(new Dimension(frameWidth/6, frameHeight/3));
         drawingCards.setMinimumSize(new Dimension(frameWidth/6, frameHeight/3));
 
-        JPanel discard = new JPanel();
+        discard = new JPanel();
         discard.setBackground(Color.GREEN);
         discard.setSize(new Dimension(frameWidth/6, frameHeight/4));
         discard.setPreferredSize(new Dimension(frameWidth/6, frameHeight/4));
@@ -102,7 +117,7 @@ public class GUI extends JFrame implements ActionListener {
 
 
 
-        JPanel player2 = new JPanel();
+        player2 = new JPanel();
         player2.setSize(new Dimension(frameWidth/3, frameHeight/2));
         player2.setPreferredSize(new Dimension(frameWidth/3, frameHeight/2));
         player2.setBackground(Color.PINK);
@@ -154,30 +169,50 @@ public class GUI extends JFrame implements ActionListener {
 		changeConstraints(buttonC, 2, 0, 1, 1);
 		buttons.add(fold, buttonC);
 
+		// BUTTON INTERACTIONS
+		callCheck.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				/*
+				 *  When call or check is pressed, then we proceed to add the next community card, DEPENDS IF A RAISE JUST OCCURED
+				 * 
+				 *  IF RAISE OCCURRED - Pay the raise and continue
+				 * 
+				 *  IF NOT - Draw next community card without changing anything
+				 * 
+				 */
+				Card tempDrawn = game.drawCard();
+				community.add(tempDrawn);
+				if(game.raise > 0) {
+					game.call();
+					return;
+				}
+
+				game.endTurn();
+				
+				update(communityCards, action.ADD, tempDrawn);
+				System.out.println(tempDrawn + " was added to the community");
+			}
+		});
+
+		raise.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				System.out.println("Raise was pressed");
+				game.raisePot(10);
+				game.endTurn();
+			}
+		});
+
+		fold.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				System.out.println("Fold was pressed");
+			}
+		});
+
 		this.add(gameArea);
 		this.setVisible(true);
-
-		
-		//    // this supplies the background
-		//    try {
-		// 	System.out.println(getClass().toString());
-		// 	Image blackImg = ImageIO.read(getClass().getResource("background.jpg"));
-		// 	setContentPane(new ImagePanel(blackImg));
-
-		//    }catch(IOException e) {
-		// 	   e.printStackTrace();
-		//    }
-
-		//    /*******
-		//     * This is just a test to make sure images are being read correctly on your machine. Please replace
-		//     * once you have confirmed that the card shows up properly. The code below should allow you to play the solitare
-		//     * game once it's fully created.
-		//     */
-		//    Card card = new Card(2, Card.Suit.Diamonds);
-		//    System.out.println(card);
-		//    this.add(card);    
-
-
     }
 
 	private void update(JPanel panel, action type, Card element)
@@ -190,6 +225,8 @@ public class GUI extends JFrame implements ActionListener {
 			panel.remove(element);
 		}
 	}
+
+	
 	private void changeConstraints(GridBagConstraints c, int x, int y, int width, int height)
 	{
 		c.gridx = x;
@@ -198,13 +235,10 @@ public class GUI extends JFrame implements ActionListener {
 		c.gridheight = height;
 	}
 
-
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
-		if (e.getSource() instanceof JButton)
-		{
-			System.out.println("A button was pressed");
-		}
+		//System.out.println("It can hear u No It cant");
 	}
 }
+
+	

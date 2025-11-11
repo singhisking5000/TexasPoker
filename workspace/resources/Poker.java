@@ -15,8 +15,10 @@ import resources.Card.Suit;
  */
 
 public class Poker {
-	Stack<Card> pile = new Stack<Card>();
-	ArrayList<Card> pulledCards = new ArrayList<Card>();
+	private Stack<Card> pile = new Stack<Card>();
+	private ArrayList<Card> pulledCards = new ArrayList<Card>();
+
+	public Stack<Card> community = new Stack<Card>();
 	//ArrayList<Stack <Card>> columns;
 	//Queue<Card> deck;
 	
@@ -25,14 +27,15 @@ public class Poker {
 	public int pot;
 	public Player currentPlayer;
 	public int raise;	
-	public Player player1 = new Player(100); 
-	public Player player2 = new Player(100);
+	public Player player1 = new Player(100,1); 
+	public Player player2 = new Player(100,2);
 
 	enum gameStates {
 		BETTING,
 		DRAWING,
 		END
 	}
+
 	public gameStates stage;
 
 	public void beginGame() {
@@ -76,14 +79,12 @@ public class Poker {
 
 	public  void raisePot(int amount) {
 		raise = amount;
-		pot += amount;
+		pot += raise;
 		
-		currentPlayer.setCash(currentPlayer.getCash() - amount);
+		currentPlayer.setCash(currentPlayer.getCash() - raise);
 	}
 
-	public void check() {
-		endTurn();
-	}
+	
 
 	public void fold() {
 		raise = 0;
@@ -107,6 +108,7 @@ public class Poker {
 
 	public void endTurn() {
 		switchTurn();
+		System.out.println(currentPlayer.toString() + " turn ---- POT: " + pot + " ---- RAISE: " + raise);
 		if(raise > 0) {
 			return;
 		}
