@@ -31,8 +31,8 @@ public class Poker {
 	public Player player2 = new Player(100,2);
 
 	enum gameStates {
-		BETTING,
-		DRAWING,
+		PREFLOP,
+		GAME,
 		END
 	}
 
@@ -43,7 +43,7 @@ public class Poker {
 		currentPlayer = player1;
 		raise = 0;
 
-		stage = gameStates.BETTING;
+		stage = gameStates.PREFLOP;
 
 		pile.clear();
 		for(int i = 1; i<=13; i++) { pile.push(new Card(i, Suit.Spades)); }
@@ -72,7 +72,8 @@ public class Poker {
 	
 
 	public Card drawCard()
-	{
+	{	
+		System.out.println("Pile has "+pile.size()+" cards");
 		pulledCards.add(pile.peek());
 		return pile.pop();
 	} 
@@ -89,7 +90,7 @@ public class Poker {
 
 	public void fold() {
 		raise = 0;
-		stage = gameStates.DRAWING;
+		stage = gameStates.END;
 		endTurn();
 	}
 
@@ -114,6 +115,11 @@ public class Poker {
 		}
 
 		drawCard();
+		if(stage == gameStates.PREFLOP) {
+			drawCard();
+			drawCard();
+			stage = gameStates.GAME;
+		}
 		if(pulledCards.size() == 5) {
 			stage = gameStates.END;
 		}

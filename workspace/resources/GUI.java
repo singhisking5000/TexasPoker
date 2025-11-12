@@ -22,6 +22,7 @@ public class GUI extends JFrame implements ActionListener {
 	// List of things
 	JPanel gameArea;
 	JPanel communityCards;
+	JLayeredPane communityPane;
 	JPanel player1;
 	JPanel buttonsAndDeck;
 	JPanel buttons;
@@ -33,8 +34,15 @@ public class GUI extends JFrame implements ActionListener {
 	JPanel discard;
 	JPanel player2;
 
-	Stack<Card> deck = new Stack<Card>();
 
+	int frameWidth = 1080;
+	int frameHeight = 840;
+	//frameWidth, frameHeight/2)
+	int communityPanelSizeX = frameWidth;
+	int communityPanelSizeY = frameHeight / 2;
+
+	Stack<Card> deck = new Stack<Card>();
+	
 	enum action
 	{
 		ADD,
@@ -45,8 +53,7 @@ public class GUI extends JFrame implements ActionListener {
 		this.game = game;
 		//deck = game.getPile();
 		setTitle("Texas Holdem");
-		int frameWidth = 1080;
-		int frameHeight = 840;
+		
 		setSize(frameWidth, frameHeight);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLayout(new FlowLayout());
@@ -58,6 +65,7 @@ public class GUI extends JFrame implements ActionListener {
         communityCards.setSize(new Dimension(frameWidth, frameHeight/2));
         communityCards.setPreferredSize(new Dimension(frameWidth, frameHeight/2));
         communityCards.setBackground(Color.yellow);
+		communityCards.setLayout(null);
 
         player1 = new JPanel();
         player1.setSize(new Dimension(frameWidth/3, frameHeight/2));
@@ -181,20 +189,29 @@ public class GUI extends JFrame implements ActionListener {
 				 *  IF NOT - Draw next community card without changing anything
 				 * 
 				 */
-				Card tempDrawn = game.drawCard();
-				community.add(tempDrawn);
+				
 				if(game.raise > 0) {
 					System.out.println("Call was pressed");
 					game.call();
-					game.endTurn();
-					return;
+				} else {
+					System.out.println("Check was pressed");
 				}
 
-				System.out.println("Check was pressed");
+
+				if (community.isEmpty()){
+					addVisualCard((Card) game.getPile().peek());
+					addVisualCard((Card) game.getPile().peek());
+					addVisualCard((Card) game.getPile().peek());
+				} else {
+
+				}
+
 				game.endTurn();
+
+				addVisualCard((Card) game.getPile().peek() );
 				
-				update(communityCards, action.ADD, tempDrawn);
-				System.out.println(tempDrawn + " was added to the community");
+
+				
 			}
 		});
 
@@ -230,6 +247,12 @@ public class GUI extends JFrame implements ActionListener {
 		this.revalidate();
 		this.repaint();
 		
+	}
+
+	private void addVisualCard(Card c) {
+		community.add(c);
+		update(communityCards, action.ADD, c);
+		System.out.println(c.toString() + " was added to the community");
 	}
 
 	
