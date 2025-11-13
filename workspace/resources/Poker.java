@@ -110,19 +110,6 @@ public class Poker {
 	public void endTurn() {
 		switchTurn();
 		System.out.println(currentPlayer.toString() + " turn ---- POT: " + pot + " ---- RAISE: " + raise + " ---- CASH: " + currentPlayer.getCash());
-		if(raise > 0) {
-			return;
-		}
-
-		drawCard();
-		if(stage == gameStates.PREFLOP) {
-			drawCard();
-			drawCard();
-			stage = gameStates.GAME;
-		}
-		if(pulledCards.size() == 5) {
-			stage = gameStates.END;
-		}
 	}
 
 	public void switchTurn() {

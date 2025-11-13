@@ -38,4 +38,9 @@ public class Player {
         return "Player " + id;
     }
 
+    public int getHandValue(Cards)
+    {
+        return 1;
+    }
+
 }

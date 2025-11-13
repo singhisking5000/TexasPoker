@@ -2,6 +2,8 @@ package resources;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
+import resources.Poker.gameStates;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -32,6 +34,7 @@ public class GUI extends JFrame implements ActionListener {
 	JPanel drawPile;
 	JLayeredPane drawingCards;
 	JPanel discard;
+	JLayeredPane discardPane;
 	JPanel player2;
 
 
@@ -65,7 +68,7 @@ public class GUI extends JFrame implements ActionListener {
         communityCards.setSize(new Dimension(frameWidth, frameHeight/2));
         communityCards.setPreferredSize(new Dimension(frameWidth, frameHeight/2));
         communityCards.setBackground(Color.yellow);
-		communityCards.setLayout(null);
+		communityCards.setLayout(new FlowLayout());
 
         player1 = new JPanel();
         player1.setSize(new Dimension(frameWidth/3, frameHeight/2));
@@ -102,6 +105,10 @@ public class GUI extends JFrame implements ActionListener {
 			fold.setSize(new Dimension(frameWidth/9, frameHeight/buttonSize));
 			fold.setPreferredSize(new Dimension(frameWidth/9, frameHeight/buttonSize));
 
+			callCheck.setEnabled(true);
+			fold.setEnabled(true);
+			raise.setEnabled(true);
+
         // buttons.setLayout();
         drawPile = new JPanel();
         drawPile.setBackground(Color.MAGENTA);
@@ -121,6 +128,9 @@ public class GUI extends JFrame implements ActionListener {
         discard.setSize(new Dimension(frameWidth/6, frameHeight/4));
         discard.setPreferredSize(new Dimension(frameWidth/6, frameHeight/4));
         discard.setMinimumSize(new Dimension(frameWidth/6, frameHeight/4));
+		discard.setLayout(null);
+
+		
         // -------------------------------------------------------------- \
 
 
@@ -180,38 +190,32 @@ public class GUI extends JFrame implements ActionListener {
 		// BUTTON INTERACTIONS
 		callCheck.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
-				/*
-				 *  When call or check is pressed, then we proceed to add the next community card, DEPENDS IF A RAISE JUST OCCURED
-				 * 
-				 *  IF RAISE OCCURRED - Pay the raise and continue
-				 * 
-				 *  IF NOT - Draw next community card without changing anything
-				 * 
-				 */
-				
-				if(game.raise > 0) {
-					System.out.println("Call was pressed");
-					game.call();
-				} else {
-					System.out.println("Check was pressed");
+			public void actionPerformed(ActionEvent e) {	
+				//Call or not
+				if (community.size() == 4) {
+					callCheck.setEnabled(false);
+					fold.setEnabled(false);
+					raise.setEnabled(false);
 				}
+				if(community.size() < 5)
+				{
+					if(game.raise > 0) {
+						System.out.println("Call was pressed");
+						game.call();
+					} else {
+						System.out.println("Check was pressed");
+					}
+					
+					// For flop or not  
+					if (community.isEmpty())
+					{
+						drawDisc();
+						drawDisc();
+					} 
 
-
-				if (community.isEmpty()){
-					addVisualCard((Card) game.getPile().peek());
-					addVisualCard((Card) game.getPile().peek());
-					addVisualCard((Card) game.getPile().peek());
-				} else {
-
+					drawDisc();
+					game.endTurn();
 				}
-
-				game.endTurn();
-
-				addVisualCard((Card) game.getPile().peek() );
-				
-
-				
 			}
 		});
 
@@ -249,11 +253,18 @@ public class GUI extends JFrame implements ActionListener {
 		
 	}
 
-	private void addVisualCard(Card c) {
+	private void drawDisc()
+	{
+		//one discard one community
+		Card c = game.drawCard();
+		c.hide();
+		update(discard, action.ADD, c);
+
+		c = game.drawCard();
 		community.add(c);
 		update(communityCards, action.ADD, c);
-		System.out.println(c.toString() + " was added to the community");
 	}
+
 
 	
 	private void changeConstraints(GridBagConstraints c, int x, int y, int width, int height)
