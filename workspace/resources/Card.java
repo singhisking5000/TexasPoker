@@ -52,7 +52,7 @@ public class Card extends JPanel{
 			if(value == 11) return "j";
 			if(value == 12) return "q";
 			if(value == 13) return "k";
-			if(value == 1) return "a";
+			if(value == 14) return "a";
 			
 			// Value between 2 and 10
 			return Integer.toString(value);
@@ -67,7 +67,7 @@ public class Card extends JPanel{
 			if(value.equals("j")) return 11;
 			if(value.equals("q")) return 12;
 			if(value.equals("k")) return 13;
-			if(value.equals("a")) return 1;
+			if(value.equals("a")) return 14;
 			
 			return Integer.parseInt(value);
 		}

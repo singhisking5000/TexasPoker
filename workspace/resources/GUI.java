@@ -2,7 +2,7 @@ package resources;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
-import resources.Poker.gameStates;
+//import resources.Poker.gameStates;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -13,13 +13,14 @@ import java.awt.event.MouseMotionListener;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Stack;
 
 
 public class GUI extends JFrame implements ActionListener {
 
 	Poker game;
-	Stack<Card> community = new Stack<Card>();
+	public static ArrayList<Card> community = new ArrayList<Card>();
 
 	// List of things
 	JPanel gameArea;

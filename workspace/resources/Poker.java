@@ -30,26 +30,27 @@ public class Poker {
 	public Player player1 = new Player(100,1); 
 	public Player player2 = new Player(100,2);
 
+	/*
 	enum gameStates {
 		PREFLOP,
 		GAME,
 		END
 	}
+	*/
 
-	public gameStates stage;
+	// public gameStates stage;
 
 	public void beginGame() {
 		pot = 0;
 		currentPlayer = player1;
 		raise = 0;
 
-		stage = gameStates.PREFLOP;
 
 		pile.clear();
-		for(int i = 1; i<=13; i++) { pile.push(new Card(i, Suit.Spades)); }
-		for(int i = 1; i<=13; i++) { pile.push(new Card(i, Suit.Hearts)); }
-		for(int i = 1; i<=13; i++) { pile.push(new Card(i, Suit.Diamonds)); }
-		for(int i = 1; i<=13; i++) { pile.push(new Card(i, Suit.Clubs)); }
+		for(int i = 2; i<=14; i++) { pile.push(new Card(i, Suit.Spades)); }
+		for(int i = 2; i<=14; i++) { pile.push(new Card(i, Suit.Hearts)); }
+		for(int i = 2; i<=14; i++) { pile.push(new Card(i, Suit.Diamonds)); }
+		for(int i = 2; i<=14; i++) { pile.push(new Card(i, Suit.Clubs)); }
 
 		Collections.shuffle(pile);
 		System.out.println(pile);
@@ -90,7 +91,6 @@ public class Poker {
 
 	public void fold() {
 		raise = 0;
-		stage = gameStates.END;
 		endTurn();
 	}
 
@@ -108,15 +108,25 @@ public class Poker {
 
 
 	public void endTurn() {
-		switchTurn();
-		System.out.println(currentPlayer.toString() + " turn ---- POT: " + pot + " ---- RAISE: " + raise + " ---- CASH: " + currentPlayer.getCash());
-	}
-
-	public void switchTurn() {
 		if(currentPlayer == player1) {
 			currentPlayer = player2;
 		} else {
 			currentPlayer = player1;
+		}
+
+		System.out.println(currentPlayer.toString() + " turn ---- POT: " + pot + " ---- RAISE: " + raise + " ---- CASH: " + currentPlayer.getCash());
+
+		if(GUI.community.size() == 5) {
+			if(player1.getHand() > player2.getHand()) {
+				System.out.println("Player 1 wins with a value of " + player1.getHand());
+				return;
+			}
+
+			if(player2.getHand() > player1.getHand()) {
+				System.out.println("Player 2 wins with a value of " + player2.getHand());
+				return;
+			}
+			System.out.println("It's a tie.");
 		}
 	}
 
