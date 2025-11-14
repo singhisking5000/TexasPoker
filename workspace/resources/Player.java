@@ -45,6 +45,7 @@ public class Player {
         ArrayList<Card> allUseableCards = new ArrayList<Card>();
         allUseableCards.addAll(pocket);
         allUseableCards.addAll(GUI.community);
+        //System.out.println(allUseableCards);
 
         ArrayList<Integer> cardValues = new ArrayList<Integer>();
         
@@ -117,6 +118,6 @@ public class Player {
         // Calculating the value of the highest card - (will be converted to a decimal to note the highest)
         // Current return format = (hand value).(highest card)
         
-        return (double)(curHandVal) + (double)(currHighestCard.value / 100);
+        return (double)(curHandVal) + ((double) currHighestCard.value / 100);
     }
 }

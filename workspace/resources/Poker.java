@@ -53,22 +53,24 @@ public class Poker {
 		for(int i = 2; i<=14; i++) { pile.push(new Card(i, Suit.Clubs)); }
 
 		Collections.shuffle(pile);
-		System.out.println(pile);
+		//System.out.println(pile);
 
 
 		//sets the players pockets
 		for(int i=0; i<2; i++) {
 			drawCard();
 		}
-		player1.setPocket(pulledCards);
+		player1.setPocket(new ArrayList<>(pulledCards));
 		pulledCards.clear();
 
 		for(int i=0; i<2; i++) {
 			drawCard();
 		}
-		player2.setPocket(pulledCards);
+		player2.setPocket(new ArrayList<>(pulledCards));
 
 		pulledCards.clear();
+		System.out.println(player1.getPocket());
+		System.out.println(player2.getPocket());
 	}
 	
 
@@ -126,7 +128,7 @@ public class Poker {
 				System.out.println("Player 2 wins with a value of " + player2.getHand());
 				return;
 			}
-			System.out.println("It's a tie.");
+			System.out.println("It's a tie with values of " + player1.getHand() + " and " + player2.getHand());
 		}
 	}
 
